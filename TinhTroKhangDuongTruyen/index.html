@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính toán trở kháng đường truyền</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .image-container div {
+            width: 48%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tính toán trở kháng đường truyền</h1>
+        <div class="image-container">
+            <div>
+                <h2>Cáp xoắn đôi</h2>
+                <img src="image/Cáp xoắn đôi.png" alt="Cáp xoắn đôi">
+                <button onclick="selectCable('twisted pair cable')">Chọn</button>
+            </div>
+            <div>
+                <h2>Cáp đồng trục</h2>
+                <img src="image/Cáp đồng trục.png" alt="Cáp đồng trục">
+                <button onclick="selectCable('coaxial cable')">Chọn</button>
+            </div>
+            <div>
+                <h2>Đường dây vi dải</h2>
+                <img src="image/Đường dây vi dải.png" alt="Đường dây vi dải">
+                <button onclick="selectCable('microstrip line')">Chọn</button>
+            </div>
+            <div>
+                <h2>Đường dây dải</h2>
+                <img src="image/Đường dây dải.png" alt="Đường dây dải">
+                <button onclick="selectCable('stripline')">Chọn</button>
+            </div>
+        </div>
+        <div class="input-group hidden" id="input1-group">
+            <label for="input1" id="input1-label"></label>
+            <input type="number" id="input1">
+        </div>
+        <div class="input-group hidden" id="input2-group">
+            <label for="input2" id="input2-label"></label>
+            <input type="number" id="input2">
+        </div>
+        <div class="input-group hidden" id="input3-group">
+            <label for="input3" id="input3-label"></label>
+            <input type="number" id="input3">
+        </div>
+        <button class="hidden" id="calculateButton" onclick="calculateImpedance()">Tính toán</button>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        let selectedCable = '';
+
+        function selectCable(cableType) {
+            selectedCable = cableType;
+            document.getElementById('result').innerText = `Bạn đã chọn loại cáp: ${getCableName(cableType)}`;
+            showInputFields(cableType);
+        }
+
+        function getCableName(cableType) {
+            switch (cableType) {
+                case 'twisted pair cable':
+                    return 'Cáp xoắn đôi';
+                case 'coaxial cable':
+                    return 'Cáp đồng trục';
+                case 'microstrip line':
+                    return 'Đường dây vi dải';
+                case 'stripline':
+                    return 'Đường dây dải';
+                default:
+                    return '';
+            }
+        }
+
+        function showInputFields(cableType) {
+            const input1Group = document.getElementById('input1-group');
+            const input2Group = document.getElementById('input2-group');
+            const input3Group = document.getElementById('input3-group');
+            const calculateButton = document.getElementById('calculateButton');
+
+            input1Group.classList.remove('hidden');
+            input2Group.classList.remove('hidden');
+            input3Group.classList.remove('hidden');
+            calculateButton.classList.remove('hidden');
+
+            switch (cableType) {
+                case 'twisted pair cable':
+                    document.getElementById('input1-label').innerText = 'Nhập S (khoảng cách giữa hai dây dẫn, mm):';
+                    document.getElementById('input2-label').innerText = 'Nhập d (đường kính mỗi dây dẫn, mm):';
+                    document.getElementById('input3-label').innerText = 'Nhập εr (hằng số điện môi):';
+                    break;
+                case 'coaxial cable':
+                    document.getElementById('input1-label').innerText = 'Nhập D (đường kính vỏ, mm):';
+                    document.getElementById('input2-label').innerText = 'Nhập d (đường kính lõi, mm):';
+                    document.getElementById('input3-label').innerText = 'Nhập εr (hằng số điện môi):';
+                    break;
+                case 'microstrip line':
+                    document.getElementById('input1-label').innerText = 'Nhập W (chiều rộng dây dẫn, mm):';
+                    document.getElementById('input2-label').innerText = 'Nhập d (chiều cao lớp cách điện, mm):';
+                    document.getElementById('input3-label').innerText = 'Nhập εr (hằng số điện môi):';
+                    break;
+                case 'stripline':
+                    document.getElementById('input1-label').innerText = 'Nhập W (chiều rộng dây dẫn, mm):';
+                    document.getElementById('input2-label').innerText = 'Nhập b (khoảng cách giữa các mặt phẳng đất, mm):';
+                    document.getElementById('input3-label').innerText = 'Nhập εr (hằng số điện môi):';
+                    break;
+            }
+        }
+
+        function calculateImpedance() {
+            const input1 = parseFloat(document.getElementById('input1').value);
+            const input2 = parseFloat(document.getElementById('input2').value);
+            const input3 = parseFloat(document.getElementById('input3').value);
+
+            let impedance = 0;
+
+            switch (selectedCable) {
+                case 'twisted pair cable':
+                    impedance = (120.0 * Math.PI / Math.sqrt(input3)) * Math.log(2 * input1 / input2);
+                    break;
+                case 'coaxial cable':
+                    impedance = (138.0 * Math.log10(input1 / input2) / Math.sqrt(input3));
+                    break;
+                case 'microstrip line':
+                    const epsilon_e = (input3 + 1) / 2 + (input3 - 1) / (2 * Math.sqrt(1 + 12 * input2 / input1));
+                    if (input1 / input2 <= 1) {
+                        impedance = (60.0 / Math.sqrt(epsilon_e)) * Math.log(8.0 * input2 / input1 + input1 / (4.0 * input2));
+                    } else {
+                        impedance = (120.0 * Math.PI / (Math.sqrt(epsilon_e) * (input1 / input2 + 1.393 + 0.667 * Math.log(input1 / input2 + 1.444))));
+                    }
+                    break;
+                case 'stripline':
+                    let We;
+                    if (input1 / input2 < 0.35) {
+                        We = input1 - input2 * (0.35 - input1 / input2) * (0.35 - input1 / input2);
+                    } else {
+                        We = input1;
+                    }
+                    impedance = (30.0 * Math.PI / Math.sqrt(input3)) * (input2 / (We + 0.441 * input2));
+                    break;
+            }
+
+            document.getElementById('result').innerText = `Trở kháng: ${impedance.toFixed(2)} ohm`;
+        }
+    </script>
+</body>
+</html>
